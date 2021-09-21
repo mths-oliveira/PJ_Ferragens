@@ -8,7 +8,7 @@ export class Cache<T = any> {
 
   getItem() {
     const data: StorageItem = JSON.parse(localStorage.getItem(this.name)); //  console.log({ data: !data, ex: this.IsExpired(data) });
-    if (!data || this.IsExpired(data)) return [];
+    if (!data || this.IsExpired(data)) return;
     return data.payload as T;
   }
 
