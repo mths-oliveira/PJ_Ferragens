@@ -9,12 +9,9 @@ import { Navbar } from '../components/layout/navbar';
 import { InputModal } from '../components/layout/input-modal';
 import { ShoppingCart } from '../components/layout/shopping-cart';
 import { MenuContextProvider } from '../contexts/menu';
-import { AuthContextProvider } from '../contexts/auth';
+import { AuthContextProvider } from '../contexts/user';
 import { ClientsContextProvider } from '../contexts/client';
-import {
-  ProductsContextProvider,
-  useProductsContext,
-} from '../contexts/products';
+import { ProductsContextProvider } from '../contexts/products';
 import { ShoppingCartContextProvider } from '../contexts/shopping-cart';
 import { InputModalContextProvider } from '../contexts/input-modal';
 import { FormModalContextProvider } from '../contexts/form-modal';

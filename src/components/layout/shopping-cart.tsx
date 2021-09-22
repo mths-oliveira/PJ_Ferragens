@@ -10,7 +10,7 @@ import {
   DrawerOverlay,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/dist/client/router';
-import { useAuthContext } from '../../contexts/auth';
+import { useAuthContext } from '../../contexts/user';
 import { useShoppingCartContext } from '../../contexts/shopping-cart';
 import { format } from '../../utils/format';
 import { Button } from '../button';
@@ -20,7 +20,7 @@ import { Wrapper } from '../wrapper';
 
 export function ShoppingCart() {
   const shoppingCart = useShoppingCartContext();
-  const user = useAuthContext();
+  const { auth } = useAuthContext();
   const router = useRouter();
   return (
     <Drawer
@@ -33,7 +33,7 @@ export function ShoppingCart() {
       <DrawerContent>
         <DrawerHeader paddingY="2.25rem">
           <Stack alignItems="center" spacing="0.75rem" fontSize="md">
-            {user.auth.isAuthenticated && (
+            {auth.isAuthenticated && (
               <Text fontWeight="semibold">
                 Subtotal: {format(shoppingCart.subtotal)}
               </Text>
@@ -41,7 +41,7 @@ export function ShoppingCart() {
             <Button
               isDisabled={shoppingCart.isEmpty()}
               onClick={() => {
-                const url = user.auth.isAuthenticated
+                const url = auth.isAuthenticated
                   ? '/pedidos/representantes'
                   : '/pedidos/clientes';
                 router.push(url);
@@ -71,7 +71,7 @@ export function ShoppingCart() {
                     <Text overflowY="auto">{product.description}</Text>
                   </Stack>
                   <SimpleGrid columns={2} spacing="0.75rem">
-                    {user.auth.isAuthenticated && (
+                    {auth.isAuthenticated && (
                       <>
                         <Wrapper title="Refêrencia">{product.ref}</Wrapper>
                         <Wrapper title="Valor">{format(product.price)}</Wrapper>

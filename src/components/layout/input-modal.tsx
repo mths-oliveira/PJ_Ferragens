@@ -13,9 +13,11 @@ import { InternalLinkWithText } from '../internal-link-with-text';
 import { useInputModalContext } from '../../contexts/input-modal';
 import { isLink } from '../../utils/isLink';
 import { IProduct } from '../../core/product';
+import { useProductsContext } from '../../contexts/products';
 
 export function InputModal() {
   const inputModal = useInputModalContext();
+  const { products } = useProductsContext();
   const [value, setValue] = useState('');
   const [list, setList] = useState<IProduct[]>([]);
   const toast = useToast();
@@ -44,13 +46,13 @@ export function InputModal() {
   }
 
   useEffect(() => {
-    const list = inputModal.content.filter(({ ref }) => {
+    const list = products.filter(({ ref }) => {
       return ref.includes(value);
     });
     const MAX_LENGTH = 20;
     list.length = MAX_LENGTH;
     setList(list);
-  }, [value, inputModal.content]);
+  }, [value, products]);
 
   function onClose() {
     setValue('');

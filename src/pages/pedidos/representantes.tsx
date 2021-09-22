@@ -26,7 +26,7 @@ import { Button } from '../../components/button';
 import { Field } from '../../components/field';
 import { Heading } from '../../components/heading';
 import { Input } from '../../components/input';
-import { useAuthContext } from '../../contexts/auth';
+import { useAuthContext } from '../../contexts/user';
 import { useClientsContext } from '../../contexts/client';
 import { useShoppingCartContext } from '../../contexts/shopping-cart';
 import { IClient } from '../../core/client';
@@ -50,7 +50,7 @@ export interface RepresentativeData {
 const DEFAULT_TERM = 'À vista';
 export default function Representantes() {
   const toast = useToast();
-  const user = useAuthContext();
+  const { user } = useAuthContext();
   const shoppingcart = useShoppingCartContext();
   const { clients, addClient } = useClientsContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -113,14 +113,10 @@ export default function Representantes() {
     if (isDefaultTerm() && !!discount) {
       installment = `${total} ${DEFAULT_TERM}`;
     }
-    const representantive = {
-      name: user.name,
-      email: user.email,
-    };
     const data: RepresentativeData = {
       products: shoppingcart.products,
       client,
-      representantive,
+      representantive: user,
       total: `Valor total: ${total}`,
       payment: `Forma de pagamento: ${payment}`,
       conditions: `Condições de pagamento: ${installment}`,

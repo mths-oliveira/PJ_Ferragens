@@ -18,6 +18,11 @@ function turnIntoNumber(numInStr: string) {
 }
 
 export default async function (_, res: NextApiResponse) {
+  const products = await getProducts();
+  return res.json(products);
+}
+
+export async function getProducts() {
   const spreadsheets = await getSpreadsheets();
   const client = new GoogleClient(
     auth,
@@ -42,5 +47,5 @@ export default async function (_, res: NextApiResponse) {
       disabled: Boolean(product.DESABILITAR),
     };
   });
-  return res.json(products);
+  return products;
 }

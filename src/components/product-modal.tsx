@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/dist/client/router';
 import { useEffect, useState } from 'react';
-import { useAuthContext } from '../contexts/auth';
+import { useAuthContext } from '../contexts/user';
 import { useProductsContext } from '../contexts/products';
 import { useShoppingCartContext } from '../contexts/shopping-cart';
 import { IProduct } from '../core/product';
@@ -22,7 +22,7 @@ import { Wrapper } from './wrapper';
 
 export function ProductModal() {
   const router = useRouter();
-  const user = useAuthContext();
+  const { auth } = useAuthContext();
   const { products } = useProductsContext();
   const shoppingCart = useShoppingCartContext();
   const productModal = useDisclosure();
@@ -73,7 +73,7 @@ export function ProductModal() {
               height={['10rem', '12.5rem']}
               margin="auto"
               objectFit="contain"
-              display={[user.auth.isAuthenticated ? 'none' : 'block', 'block']}
+              display={[auth.isAuthenticated ? 'none' : 'block', 'block']}
             />
             <Text
               fontSize="md"
@@ -84,7 +84,7 @@ export function ProductModal() {
               {currentProduct.description}
             </Text>
             <SimpleGrid spacing="1rem" columns={2}>
-              {user.auth.isAuthenticated && (
+              {auth.isAuthenticated && (
                 <>
                   <Wrapper title="Refêrencia" spacing="auto">
                     {currentProduct.ref}
@@ -105,7 +105,7 @@ export function ProductModal() {
                   }}
                 />
               </Wrapper>
-              {user.auth.isAuthenticated && (
+              {auth.isAuthenticated && (
                 <Wrapper title="Subtotal">
                   {format(currentProduct.amount * currentProduct.price)}
                 </Wrapper>

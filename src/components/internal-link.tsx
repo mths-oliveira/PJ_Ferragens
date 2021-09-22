@@ -7,6 +7,7 @@ interface Props {
   children: ReactNode;
   scrollTop?: boolean;
   isDisabled?: boolean;
+  shallow?: boolean;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
@@ -15,6 +16,7 @@ export function InternalLink({
   children,
   isDisabled,
   onClick,
+  shallow = true,
   scrollTop = true,
 }: Props) {
   const { push } = useRouter();
@@ -24,7 +26,7 @@ export function InternalLink({
     }
     event.preventDefault();
     push(href, null, {
-      shallow: true,
+      shallow,
       scroll: scrollTop,
     });
   }

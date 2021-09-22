@@ -16,7 +16,7 @@ import {
   InputProps,
 } from '@chakra-ui/react';
 import { FormEvent, LegacyRef, useEffect, useState } from 'react';
-import { useAuthContext } from '../../contexts/auth';
+import { useAuthContext } from '../../contexts/user';
 import { useFormModalContext } from '../../contexts/form-modal';
 import { capitalize } from '../../utils/capitalize';
 import { Button } from '../button';
@@ -53,7 +53,7 @@ function Field({ inputRef, label, ...rest }: Props) {
 
 export function FormModal() {
   const toast = useToast();
-  const user = useAuthContext();
+  const { auth, user } = useAuthContext();
   const [inputRefs, setInputRefs] = useState<HTMLInputElement[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -74,7 +74,7 @@ export function FormModal() {
 
   async function handleSubmit(event: FormEvent<HTMLDivElement>) {
     event.preventDefault();
-    const handler = isLogin ? user.auth.signIn : user.auth.signUp;
+    const handler = isLogin ? auth.signIn : auth.signUp;
     const data = getInputsData(inputRefs);
     handleLoading(handler)(data);
   }
@@ -120,7 +120,7 @@ export function FormModal() {
           marginX="0.5rem"
           bg="white"
         >
-          {user.auth.isAuthenticated ? (
+          {auth.isAuthenticated ? (
             <Flex flexDirection="column" alignItems="center">
               <Avatar
                 name={user.name}
@@ -141,7 +141,7 @@ export function FormModal() {
                 width="100%"
                 marginTop="2rem"
                 onClick={async () => {
-                  await user.auth.signOut();
+                  await auth.signOut();
                 }}
               >
                 Sair

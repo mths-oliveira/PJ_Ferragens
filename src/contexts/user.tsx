@@ -7,32 +7,28 @@ import {
   useEffect,
 } from 'react';
 import { IUser } from '../core/user';
-import { Cache } from '../utils/cache';
 
 interface ContextProps {
-  name: string;
-  email: string;
+  user: User;
   auth: {
     isAuthenticated: boolean;
-    signIn: (user: AuthenticateProps) => Promise<void>;
     signUp: (user: IUser) => Promise<void>;
+    signIn: (user: SignIn) => Promise<void>;
     signOut: () => Promise<void>;
   };
 }
 
-interface AuthProps {
+interface User {
   name: string;
   email: string;
 }
 
-interface AuthenticateProps {
+interface SignIn {
   email: string;
   password: string;
 }
 
-interface SignUp {
-  email: string;
-  password: string;
+interface SignUp extends SignIn {
   name: string;
   code: string;
 }
@@ -41,29 +37,27 @@ interface Props {
   children: ReactNode;
 }
 
-let cache: Cache<AuthProps>;
 const AuthContext = createContext({} as ContextProps);
 
 export function AuthContextProvider({ children }: Props) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [user, setUser] = useState({} as User);
 
   useEffect(() => {
-    cache = new Cache<AuthProps>('auth_user');
-    const auth = cache.getItem();
-    if (!auth) return;
-    setName(auth.name);
-    setEmail(auth.email);
+    const isUser = localStorage.getItem('auth_user');
+    if (isUser) {
+      const user: User = JSON.parse(isUser);
+      setUser(user);
+    }
   }, []);
 
   useEffect(() => {
-    const isAuthenticated = !!name && !!email;
-    setIsAuthenticated(isAuthenticated);
-    cache.setItem({ email, name }, 24);
-  }, [name, email]);
+    if (!user) return;
+    setIsAuthenticated(!!user.name && !!user.email);
+    localStorage.setItem('auth_user', JSON.stringify(user));
+  }, [user]);
 
-  async function signIn(user: AuthenticateProps) {
+  async function signIn(user: SignIn) {
     const response = await axios.post<IUser>(
       '/api/sign-in',
       {
@@ -73,17 +67,15 @@ export function AuthContextProvider({ children }: Props) {
       { validateStatus: null }
     );
     if (response.status !== 404) {
-      const { email, name } = response.data;
-      setName(name);
-      setEmail(email);
+      const { name, email } = response.data;
+      setUser({ name, email });
     } else {
       throw new Error('E-mail ou senha incorretos');
     }
   }
 
   async function signOut() {
-    setName('');
-    setEmail('');
+    setUser({} as User);
   }
 
   async function signUp(user: SignUp) {
@@ -103,8 +95,8 @@ export function AuthContextProvider({ children }: Props) {
       case 400:
         throw new Error('Código de segurança incorreto');
       default:
-        setName(response.data.name);
-        setEmail(response.data.email);
+        const { email, name }: User = response.data;
+        setUser({ email, name });
         return;
     }
   }
@@ -112,13 +104,12 @@ export function AuthContextProvider({ children }: Props) {
   return (
     <AuthContext.Provider
       value={{
-        email,
-        name,
+        user,
         auth: {
           isAuthenticated,
           signIn,
-          signOut,
           signUp,
+          signOut,
         },
       }}
     >

@@ -20,7 +20,12 @@ export function InternalLinkWithText({
     event.target = event.currentTarget.parentElement;
   }
   return (
-    <InternalLink href={href} isDisabled={isDisabled} onClick={onClick}>
+    <InternalLink
+      href={href}
+      isDisabled={isDisabled}
+      onClick={onClick}
+      shallow={false}
+    >
       <Text
         fontSize="md"
         padding="0.75rem 1.5rem"

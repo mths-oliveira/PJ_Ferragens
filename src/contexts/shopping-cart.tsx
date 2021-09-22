@@ -8,7 +8,6 @@ import {
 } from 'react';
 import { IProduct } from '../core/product';
 import { IShoppingCart } from '../core/shopping-cart';
-import { Cache } from '../utils/cache';
 
 interface ContextProps extends IShoppingCart {
   isOpen: boolean;
@@ -20,7 +19,6 @@ interface Props {
   children: ReactNode;
 }
 
-let cache: Cache<IProduct[]>;
 const ShoppingCartContext = createContext({} as ContextProps);
 
 export function ShoppingCartContextProvider({ children }: Props) {
@@ -29,9 +27,11 @@ export function ShoppingCartContextProvider({ children }: Props) {
   const [subtotal, setSubtotal] = useState(0);
 
   useEffect(() => {
-    cache = new Cache<IProduct[]>('shopping_cart');
-    const cachedProducts = cache.getItem();    
-    setProducts(cachedProducts);
+    const isProducts = localStorage.getItem('shopping_cart');
+    if (isProducts) {
+      const products: IProduct[] = JSON.parse(isProducts);
+      setProducts(products);
+    }
   }, []);
 
   useEffect(() => {
@@ -43,9 +43,13 @@ export function ShoppingCartContextProvider({ children }: Props) {
   }, [products]);
 
   useEffect(() => {
-    if (products.length === 0) return;
-    cache.setItem(products);
+    if (isEmpty()) return;
+    localStorage.setItem('shopping_cart', JSON.stringify(products));
   }, [products]);
+
+  function isEmpty() {
+    return products.length === 0;
+  }
 
   function removeProductByRef(ref: string) {
     const filteredProducts = products.filter((product) => {
@@ -77,9 +81,6 @@ export function ShoppingCartContextProvider({ children }: Props) {
     setProducts(updatedProducts);
   }
 
-  function isEmpty() {
-    return products?.length === 0;
-  }
   return (
     <ShoppingCartContext.Provider
       value={{

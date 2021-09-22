@@ -1,10 +1,7 @@
 import { useDisclosure } from '@chakra-ui/react';
 import { createContext, useContext, ReactNode } from 'react';
-import { IProduct } from '../core/product';
-import { useProductsContext } from './products';
 
 interface ContextProps {
-  content: IProduct[];
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
@@ -18,12 +15,9 @@ const InputModalContext = createContext({} as ContextProps);
 
 export function InputModalContextProvider({ children }: Props) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const { products } = useProductsContext();
 
   return (
-    <InputModalContext.Provider
-      value={{ isOpen, onOpen, onClose, content: products }}
-    >
+    <InputModalContext.Provider value={{ isOpen, onOpen, onClose }}>
       {children}
     </InputModalContext.Provider>
   );

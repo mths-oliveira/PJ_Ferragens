@@ -7,24 +7,17 @@ import { InternalLink } from '../../components/internal-link';
 import { ProductModal } from '../../components/product-modal';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { IPages } from '../api/pages';
+import { getPages } from '../../data/get-pages';
 import { IProduct } from '../../core/product';
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
+import { getProducts } from '../api/products';
 
-export default function Products() {
-  const { query } = useRouter();
-  const { products } = useProductsContext();
-  const [listProducts, setListProducts] = useState<IProduct[]>([]);
-  useEffect(() => {
-    (async () => {
-      const response = await axios.get<IPages>('/api/pages');
-      if (!response.data || !query.page) return;
-      const refs: string[] = response.data[query.page as string];
-      const listProducts = products.filter((product) => {
-        return refs.includes(product.ref);
-      });
-      setListProducts(listProducts);
-    })();
-  }, [query.page, products]);
+interface Props {
+  products: IProduct[];
+  page: string;
+}
+
+export default function Products({ page, products }: Props) {
   return (
     <Box
       className="paddingY"
@@ -48,11 +41,11 @@ export default function Products() {
         columnGap="1rem"
         justifyContent="center"
       >
-        {listProducts.map(({ ref, image, description }) => (
+        {products.map(({ ref, image, description }) => (
           <InternalLink
             key={ref}
             scrollTop={false}
-            href={`/produtos/${query.page}?ref=${ref}`}
+            href={`/produtos/${page}?ref=${ref}`}
           >
             <Card>
               <Image
@@ -84,3 +77,62 @@ export default function Products() {
     </Box>
   );
 }
+
+export const getStaticProps: GetStaticProps<Props> = async (ctx) => {
+  const page = ctx.params.page as string;
+  const pages = await getPages();
+  const products = await getProducts();
+  const pageProducts: IProduct[] = [];
+  for (const ref of pages[page]) {
+    for (const product of products) {
+      if (product.ref === ref) {
+        pageProducts.push(product);
+      }
+    }
+  }
+  return {
+    props: {
+      page,
+      products: pageProducts,
+    },
+    revalidate: 60 * 60 * 6,
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [
+      {
+        params: {
+          page: 'fechaduras_e_acessorios',
+        },
+      },
+      {
+        params: {
+          page: 'ferragens_em_geral',
+        },
+      },
+      {
+        params: {
+          page: 'ferragens_para_janelas',
+        },
+      },
+      {
+        params: {
+          page: 'ferragens_para_portas',
+        },
+      },
+      {
+        params: {
+          page: 'pecas_para_moveis',
+        },
+      },
+      {
+        params: {
+          page: 'utilidades_domesticas',
+        },
+      },
+    ],
+    fallback: false,
+  };
+};

@@ -2,13 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { List, Table } from '../../components/email';
 import { sendMail } from '../../config/nodemailer';
 import { IProduct } from '../../core/product';
-import { format } from '../../utils/format';
 import { getDate } from '../../utils/getData';
 import { ClientData } from '../pedidos/clientes';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { client, products }: ClientData = req.body;
-  const date = `Enviado em: ${getDate()}`;
+  const date = `Enviado em: ${getDate(new Date())}`;
   const from = `Enviado por: ${client.name}`;
   const html = `
     <div style="font-family: Arial, Helvetica, sans-serif; color: #565857; font-weight: 600">
