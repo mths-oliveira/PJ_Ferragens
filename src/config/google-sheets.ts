@@ -1,7 +1,8 @@
 import { google } from 'googleapis';
+import credentials from '../../credentials.json';
 
 export const auth = new google.auth.GoogleAuth({
-  keyFile: 'credentials.json',
+  credentials,
   scopes: 'https://www.googleapis.com/auth/spreadsheets',
 });
 
