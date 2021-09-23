@@ -69,16 +69,13 @@ export function InputModal() {
       motionPreset="scale"
     >
       <ModalOverlay />
-      <ModalContent
-        padding="0"
-        bg="transparent"
-        marginY={['0.5rem', '3.75rem']}
-      >
+      <ModalContent padding="0" bg="transparent" marginY={['0', '3.75rem']}>
         <ModalHeader padding="0.5rem">
           <Input prefix="REF.:" onChange={handleChange} />
         </ModalHeader>
         <ModalBody
           bg="white"
+          minHeight="10.5rem"
           padding="0.75rem 0"
           margin=".5rem"
           borderRadius="md"
