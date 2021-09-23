@@ -22,12 +22,13 @@ interface Props {
 const ShoppingCartContext = createContext({} as ContextProps);
 
 export function ShoppingCartContextProvider({ children }: Props) {
+  const url = 'shopping_cart';
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [subtotal, setSubtotal] = useState(0);
 
   useEffect(() => {
-    const isProducts = localStorage.getItem('shopping_cart');
+    const isProducts = localStorage.getItem(url);
     if (isProducts) {
       const products: IProduct[] = JSON.parse(isProducts);
       setProducts(products);
@@ -44,7 +45,7 @@ export function ShoppingCartContextProvider({ children }: Props) {
 
   useEffect(() => {
     if (isEmpty()) return;
-    localStorage.setItem('shopping_cart', JSON.stringify(products));
+    localStorage.setItem(url, JSON.stringify(products));
   }, [products]);
 
   function isEmpty() {
@@ -81,9 +82,15 @@ export function ShoppingCartContextProvider({ children }: Props) {
     setProducts(updatedProducts);
   }
 
+  function clear() {
+    setProducts([]);
+    localStorage.removeItem(url);
+  }
+
   return (
     <ShoppingCartContext.Provider
       value={{
+        clear,
         isOpen,
         onOpen,
         onClose,

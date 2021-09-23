@@ -36,6 +36,7 @@ import { CNPJMask } from '../../utils/cnpj-mask';
 import { CPFMask } from '../../utils/cpf-mask';
 import { format } from '../../utils/format';
 import { IClientData } from './clientes';
+import { useRouter } from 'next/dist/client/router';
 
 export interface RepresentativeData {
   client: IClient;
@@ -43,15 +44,17 @@ export interface RepresentativeData {
   products: IProduct[];
   total: string;
   payment: string;
+  discount?: string;
   conditions: string;
   term: string;
 }
 
 const DEFAULT_TERM = 'À vista';
 export default function Representantes() {
+  const { push } = useRouter();
   const toast = useToast();
   const { user } = useAuthContext();
-  const shoppingcart = useShoppingCartContext();
+  const shoppingCart = useShoppingCartContext();
   const { clients, addClient } = useClientsContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isForm, setIsForm] = useState(true);
@@ -63,13 +66,13 @@ export default function Representantes() {
   const [totalForEachInstallment, setTotalForEachInstallment] = useState('');
 
   useEffect(() => {
-    let total = shoppingcart.subtotal;
+    let total = shoppingCart.subtotal;
     if (discount) {
-      const discountValue = shoppingcart.subtotal * (discount / 100);
+      const discountValue = shoppingCart.subtotal * (discount / 100);
       total -= discountValue;
     }
     setTotal(format(total));
-  }, [discount, shoppingcart.subtotal]);
+  }, [discount, shoppingCart.subtotal]);
 
   useEffect(() => {
     if (!isDefaultTerm()) setDiscount(0);
@@ -77,7 +80,7 @@ export default function Representantes() {
     for (const installments of term.split('/')) {
       if (installments) numberOfInstallments++;
     }
-    let totalForEachInstallment = shoppingcart.subtotal;
+    let totalForEachInstallment = shoppingCart.subtotal;
     if (numberOfInstallments) {
       totalForEachInstallment /= numberOfInstallments;
     }
@@ -86,7 +89,7 @@ export default function Representantes() {
       ? `${formatedValue} ${DEFAULT_TERM}`
       : `${numberOfInstallments}x de ${formatedValue}`;
     setTotalForEachInstallment(formatedTotalForEachInstallment);
-  }, [term, shoppingcart.subtotal]);
+  }, [term, shoppingCart.subtotal]);
 
   useEffect(() => {
     setIsForm(true);
@@ -114,23 +117,25 @@ export default function Representantes() {
       installment = `${total} ${DEFAULT_TERM}`;
     }
     const data: RepresentativeData = {
-      products: shoppingcart.products,
+      products: shoppingCart.products,
       client,
       representantive: user,
-      total: `Valor total: ${total}`,
+      total: `Valor total: ${total} ${
+        discount ? `(com ${discount}% de desconto)` : ''
+      }`,
       payment: `Forma de pagamento: ${payment}`,
       conditions: `Condições de pagamento: ${installment}`,
       term: `Prazo: ${isDefaultTerm() ? 'Hoje' : `${term} dias`}`,
     };
     const url = '/api/send-representantive-email';
-    try {
-      const response = await axios.post(url, data, {
-        validateStatus: null,
-      });
-      const isError = response.status !== 200;
-      createToast(isError ? 'error' : 'success', response.data);
-    } catch (error) {
-      console.log({ error: error.message });
+    const response = await axios.post(url, data, {
+      validateStatus: null,
+    });
+    const isError = response.status !== 200;
+    createToast(isError ? 'error' : 'success', response.data);
+    if (!isError) {
+      shoppingCart.clear();
+      push('/');
     }
   }
 
@@ -175,7 +180,7 @@ export default function Representantes() {
         >
           <Radio value="Dinheiro">Dinheiro</Radio>
           <Radio value="Cheque">Cheque</Radio>
-          {shoppingcart.subtotal > 400 && (
+          {shoppingCart.subtotal > 400 && (
             <Radio value="Boleto Bancário">Boleto Bancário</Radio>
           )}
           <Radio value="Pagamento por PIX">Pagamento por PIX</Radio>

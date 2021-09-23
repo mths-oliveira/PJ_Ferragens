@@ -7,6 +7,7 @@ import { capitalize } from '../../utils/capitalize';
 import { useShoppingCartContext } from '../../contexts/shopping-cart';
 import { IProduct } from '../../core/product';
 import axios from 'axios';
+import { useRouter } from 'next/dist/client/router';
 
 export interface IClientData {
   name: string;
@@ -20,6 +21,7 @@ export interface ClientData {
 
 export default function Pedidos() {
   const shoppingCart = useShoppingCartContext();
+  const { push } = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const toast = useToast();
@@ -36,8 +38,9 @@ export default function Pedidos() {
     });
   }
 
-  async function handleSubmit(event: FormEvent<HTMLDivElement>) {
-    const url = '/api/send-client-email';
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement & HTMLDivElement>
+  ) {
     event.preventDefault();
     const data: ClientData = {
       client: {
@@ -46,25 +49,20 @@ export default function Pedidos() {
       },
       products: shoppingCart.products,
     };
-    try {
-      const response = await axios.post(url, data, {
-        validateStatus: null,
-      });
-      const isError = response.status !== 200;
-      createToast(isError ? 'error' : 'success', response.data);
-    } catch (error) {
-      console.log({ error: error.message });
+    const response = await axios.post('/api/send-client-email', data, {
+      validateStatus: null,
+    });
+    const isError = response.status !== 200;
+    createToast(isError ? 'error' : 'success', response.data);
+    if (!isError) {
+      shoppingCart.clear();
+      push('/');
     }
   }
 
   return (
-    <Box className="paddingX paddingY">
-      <Stack
-        as="form"
-        spacing="2.25rem"
-        maxWidth="22.5rem"
-        onSubmit={handleSubmit}
-      >
+    <Box className="paddingX paddingY" as="form" onSubmit={handleSubmit}>
+      <Stack spacing="2.25rem" maxWidth="22.5rem">
         <Stack spacing="1rem">
           <Heading whiteSpace="nowrap" padding="0">
             Orçamento

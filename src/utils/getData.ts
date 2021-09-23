@@ -24,6 +24,13 @@ const months = [
 
 export function getDate() {
   const date = new Date();
+  const GMT = -3;
+  const UTCHours = date.getUTCHours();
+  date.setHours(UTCHours + GMT);
+  return date;
+}
+
+export function formatToBrazilianString(date: Date) {
   const weekDay = weekDays[date.getDay()];
   const day = zeroFill(date.getDate());
   const month = months[date.getMonth()];

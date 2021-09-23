@@ -2,7 +2,7 @@ export function List(list: string[]) {
   return `<ul style=" list-style: none; font-size: 16px; padding: 0">
             ${list.map((content, i) => {
               const marginTop = i === 0 ? 0 : 16;
-              return `<li style="display: flex; margin-top: ${marginTop}px;">${content}</li>`;
+              return `<li style="margin-top: ${marginTop}px">${content}</li>`;
             })}
           </ul>`.replace(/>,/g, '>');
 }
@@ -13,7 +13,7 @@ export function Table([headers, ...records]: string[][]) {
             <tr style="background-color: #00aaaa; color: #ffffff; font-size: 16px">
               ${headers.map(
                 (title) => `<th style="padding: 12px 16px">${title}</th>`
-              )}      
+              )}
             </tr>
             ${records.map(
               (record) => `

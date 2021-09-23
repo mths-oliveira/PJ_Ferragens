@@ -7,4 +7,5 @@ export interface IShoppingCart {
   addProduct: (product: IProduct) => void;
   updateProduct: (updatedProduct: IProduct) => void;
   removeProductByRef: (ref: string) => void;
+  clear: () => void;
 }

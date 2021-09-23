@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/dist/client/router';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useAuthContext } from '../contexts/user';
 import { useProductsContext } from '../contexts/products';
 import { useShoppingCartContext } from '../contexts/shopping-cart';
@@ -43,9 +43,10 @@ export function ProductModal() {
     });
   }
 
-  function handleClick() {
-    onClose();
+  function handleSubmit(event: FormEvent<HTMLDivElement>) {
+    event.preventDefault();
     shoppingCart.addProduct(currentProduct);
+    onClose();
     shoppingCart.onOpen();
   }
 
@@ -60,7 +61,12 @@ export function ProductModal() {
     >
       <ModalOverlay />
       {currentProduct && (
-        <ModalContent padding="0" overflow="hidden">
+        <ModalContent
+          padding="0"
+          overflow="hidden"
+          as="form"
+          onSubmit={handleSubmit}
+        >
           <ModalBody
             bg="white"
             color="gray.500"
@@ -122,7 +128,7 @@ export function ProductModal() {
               width="100%"
               fontSize="1.25rem"
               padding="0.75rem 1rem"
-              onClick={handleClick}
+              type="submit"
             >
               Adicionar ao carrinho
             </Button>
