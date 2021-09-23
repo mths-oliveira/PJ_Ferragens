@@ -16,7 +16,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     total,
     representantive,
   }: RepresentativeData = req.body;
-  const date = `Enviado em: ${getDate(new Date())}`;
+  const date = `Enviado em: ${getDate()}`;
   const from = `Enviado por: ${representantive.name}`;
   const html = `
     <div style="font-family: Arial, Helvetica, sans-serif; color: #565857; font-weight: 600">
@@ -41,8 +41,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     return res.json(
       'Em instantes, você receberá o seu orçamento por e-mail, por favor verifique sua caixa de spam e outros filtros.'
     );
-  } catch (error) {
-    console.log({ error: error.message });
+  } catch (_) {
     return res
       .status(404)
       .json(

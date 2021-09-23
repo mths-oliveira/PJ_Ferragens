@@ -23,30 +23,36 @@ export function ClientsContextProvider({ children }: Props) {
   const url = '/api/clients';
   const [clients, setClients] = useState<IClient[]>([]);
 
-  useEffect(updateClients, []);
+  useEffect(() => {
+    getClients().then((clients) => {
+      setClients(clients);
+    });
+  }, []);
+
+  async function getClients() {
+    const response = await axios.get<IClient[]>(url);
+    let clients = response.data;
+    if (!Array.isArray(clients) || isEmpty(clients)) {
+      clients = await getClients();
+    }
+    return clients;
+  }
+
+  function isEmpty(list: any[]) {
+    return list.length === 0;
+  }
 
   async function addClient(client: IClient) {
     if (alreadyRegistered(client)) return;
     await axios.post(url, client);
-    updateClients();
+    setClients([...clients, client]);
   }
 
-  function alreadyRegistered(client: IClient) {
-    const index = clients.findIndex(({ id }) => {
+  function alreadyRegistered({ id }: IClient) {
+    const client = clients.find((client) => {
       return id === client.id;
     });
-    return index !== -1;
-  }
-
-  function updateClients() {
-    getClients().then((clients) => {
-      setClients(clients);
-    });
-  }
-
-  async function getClients(): Promise<IClient[]> {
-    const response = await axios.get<IClient[]>(url);
-    return response.data;
+    return !!client;
   }
 
   return (

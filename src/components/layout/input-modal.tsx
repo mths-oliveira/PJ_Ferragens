@@ -50,7 +50,9 @@ export function InputModal() {
       return ref.includes(value);
     });
     const MAX_LENGTH = 20;
-    list.length = MAX_LENGTH;
+    if (list.length > MAX_LENGTH) {
+      list.length = MAX_LENGTH;
+    }
     setList(list);
   }, [value, products]);
 
@@ -67,7 +69,11 @@ export function InputModal() {
       motionPreset="scale"
     >
       <ModalOverlay />
-      <ModalContent padding="0" bg="transparent">
+      <ModalContent
+        padding="0"
+        bg="transparent"
+        marginY={['0.5rem', '3.75rem']}
+      >
         <ModalHeader padding="0.5rem">
           <Input prefix="REF.:" onChange={handleChange} />
         </ModalHeader>

@@ -1,4 +1,4 @@
-const weekDay = [
+const weekDays = [
   'Domingo',
   'Segunda-feira',
   'Terça-feira',
@@ -7,7 +7,7 @@ const weekDay = [
   'Sexta-feira',
   'Sábado',
 ];
-const month = [
+const months = [
   'Janeiro',
   'Fevereiro',
   'Março',
@@ -22,18 +22,15 @@ const month = [
   'Dezembro',
 ];
 
-export function getDate({
-  getMinutes,
-  getHours,
-  getDate,
-  getDay,
-  getMonth,
-  getFullYear,
-}: Date) {
-  const dateFormated = `${weekDay[getDay()]}, ${zeroFill(getDate())} de ${
-    month[getMonth()]
-  } de ${getFullYear()} as ${zeroFill(getHours())}:${zeroFill(getMinutes())}`;
-  return dateFormated;
+export function getDate() {
+  const date = new Date();
+  const weekDay = weekDays[date.getDay()];
+  const day = zeroFill(date.getDate());
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  const hours = zeroFill(date.getHours());
+  const minuts = zeroFill(date.getMinutes());
+  return `${weekDay}, ${day} de ${month} de ${year} as ${hours}:${minuts}`;
 }
 
 function zeroFill(num: number) {
