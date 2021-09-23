@@ -59,6 +59,8 @@ export function FormModal() {
   const [isLogin, setIsLogin] = useState(true);
   const { isOpen, onClose } = useFormModalContext();
 
+  useEffect(onClose, [auth.isAuthenticated]);
+
   function handleRefs(ref: HTMLInputElement) {
     if (!ref) return;
     const haveInput = inputRefs.find((inputRef) => {

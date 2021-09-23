@@ -1,27 +1,20 @@
-import { Center, Text } from '@chakra-ui/react';
+import { Center, Image } from '@chakra-ui/react';
 
 export function Header() {
   return (
     <Center
-      className="paddingY paddingX"
       as="header"
       bg="primary"
-      color="white"
-      fontFamily="Merriweather"
-      fontSize={['lg', 'lg', '2xl']}
-      fontWeight="bold"
-      textTransform="uppercase"
+      padding={[
+        '1rem 0',
+        '1rem 0',
+        '2rem 1rem',
+        '3.5rem 7.5rem',
+        '3.5rem 10rem',
+        '3.5rem 15rem',
+      ]}
     >
-      <Text
-        as="span"
-        border={['5px solid white', '5px solid white', '8px solid white']}
-        padding={['1rem', '1rem', '1.5rem']}
-      >
-        Pj
-      </Text>
-      <Text as="span" marginLeft={['1rem', '1rem', '1.5rem']}>
-        ferragens
-      </Text>
+      <Image src="/assets/logo.jpg" objectFit="cover" />
     </Center>
   );
 }

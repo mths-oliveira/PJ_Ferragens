@@ -12,7 +12,7 @@ export const theme = extendTheme({
   breakpoints,
   colors: {
     black: '#16161D',
-    primary: '#bc1c1c',
+    primary: '#bc0812',
     gray: {
       100: '#f4f6f7',
       500: '#575958',

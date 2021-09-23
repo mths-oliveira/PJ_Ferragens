@@ -11,6 +11,7 @@ import {
   Flex,
   Radio,
   StackProps,
+  CircularProgress,
 } from '@chakra-ui/react';
 import {
   ChangeEvent,
@@ -37,6 +38,7 @@ import { CPFMask } from '../../utils/cpf-mask';
 import { format } from '../../utils/format';
 import { IClientData } from './clientes';
 import { useRouter } from 'next/dist/client/router';
+import { Textarea } from '../../components/text-area';
 
 export interface RepresentativeData {
   client: IClient;
@@ -47,6 +49,7 @@ export interface RepresentativeData {
   discount?: string;
   conditions: string;
   term: string;
+  observation?: string;
 }
 
 const DEFAULT_TERM = 'À vista';
@@ -64,6 +67,7 @@ export default function Representantes() {
   const [total, setTotal] = useState('');
   const [discount, setDiscount] = useState(0);
   const [totalForEachInstallment, setTotalForEachInstallment] = useState('');
+  const [observation, setObservation] = useState('');
 
   useEffect(() => {
     let total = shoppingCart.subtotal;
@@ -126,6 +130,7 @@ export default function Representantes() {
       payment: `Forma de pagamento: ${payment}`,
       conditions: `Condições de pagamento: ${installment}`,
       term: `Prazo: ${isDefaultTerm() ? 'Hoje' : `${term} dias`}`,
+      observation: observation && `Observação: ${observation}`,
     };
     const url = '/api/send-representantive-email';
     const response = await axios.post(url, data, {
@@ -228,6 +233,13 @@ export default function Representantes() {
             }}
           />
         )}
+        <Field name="observation" label="Observação" isRequired={false}>
+          <Textarea
+            onChange={({ currentTarget }) => {
+              setObservation(currentTarget.value);
+            }}
+          />
+        </Field>
       </Form>
       <InputModal isOpen={isOpen} onClose={onClose}>
         {isForm ? (
@@ -426,6 +438,8 @@ function Form({
   ...rest
 }: Props) {
   const stackInputRef = useRef<HTMLDivElement>();
+  const [isLoading, setIsLoading] = useState(false);
+  const shoppingCart = useShoppingCartContext();
 
   function handleSubmit(event: FormEvent<HTMLDivElement>) {
     event.preventDefault();
@@ -435,6 +449,12 @@ function Form({
     const data = getInputsData(inputs);
     onSubmit(data);
   }
+
+  useEffect(() => {
+    if (shoppingCart.products.length === 0) {
+      setIsLoading(false);
+    }
+  }, [shoppingCart.products]);
 
   function getInputsData(inputs: HTMLInputElement[]) {
     const data: any = {};
@@ -467,8 +487,25 @@ function Form({
       <Stack spacing="0.5rem" alignItems="center">
         {element}
       </Stack>
-      <Button type="submit" padding="0.75rem 1rem" fontSize="md">
-        {callToAction}
+      <Button
+        type="submit"
+        padding="0.75rem 1rem"
+        fontSize="md"
+        onClick={() => {
+          setIsLoading(true);
+        }}
+      >
+        {isLoading ? (
+          <CircularProgress
+            isIndeterminate
+            trackColor="transparent"
+            thickness="0.75rem"
+            color="white"
+            size="2.25rem"
+          />
+        ) : (
+          callToAction
+        )}
       </Button>
     </Stack>
   );

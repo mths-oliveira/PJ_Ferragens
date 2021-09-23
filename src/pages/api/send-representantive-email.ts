@@ -15,9 +15,14 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     term,
     total,
     representantive,
+    observation,
   }: RepresentativeData = req.body;
   const from = `Enviado por: ${representantive.name}, ${representantive.email}`;
   const date = `Enviado em: ${formatToBrazilianString(getDate())}`;
+  const list = [total, payment, conditions, term];
+  if (observation) {
+    list.push(observation);
+  }
   const html = `
     <div style="font-family: Arial, Helvetica, sans-serif; color: #565857; font-weight: 600">
       ${List([from, date])}  
@@ -25,7 +30,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         ['Referência', 'Quantidade', 'Subtotal'],
         ...getRecords(products),
       ])}
-      ${List([total, payment, conditions, term])}  
+      ${List(list)}  
     </div>`.replace(/>\s+\</g, '><');
 
   function getRecords(products: IProduct[]) {
